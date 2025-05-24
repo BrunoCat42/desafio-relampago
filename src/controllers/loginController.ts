@@ -15,7 +15,10 @@ export async function loginUser(
 
   try {
     const token = await login({ email, password });
-    res.status(200).json({ token });
+    res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 3600000
+    }).json({succes: true})
     return
 
   } catch (err: any) {
