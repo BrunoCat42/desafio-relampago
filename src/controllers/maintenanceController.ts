@@ -7,7 +7,7 @@ export async function postMaintenance(req: Request, res: Response) {
   const { maintenance, description, performed_at, next_due_date } = req.body as NewMaintenance;
 
   if (!maintenance|| !description || !performed_at) {
-     res.status(400).json({ error: "Description and performed_at are required" });
+     res.status(400).json({ error: "One or more field are required" });
      return
   }
 
