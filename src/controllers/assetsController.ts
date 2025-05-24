@@ -8,23 +8,27 @@ import {
   editAsset,
   removeAsset,
 } from "../services/assetsService";
+import { Asset, NewAsset } from "../interfaces/Assets";
 
 export async function postAsset(req: Request, res: Response) {
-  const { name, description } = req.body;
+  const { name, description } = req.body as NewAsset;
   const { userId } = (req as any).user as { userId: string };
 
   if (!name) {
-    return res.status(400).json({ error: "Name is required" });
+    res.status(400).json({ error: "Name is required" });
+    return;
   }
 
   const asset = await createAsset({ name, description }, userId);
-  return res.status(201).json(asset);
+  res.status(201).json(asset);
+  return;
 }
 
 export async function getAssets(req: Request, res: Response) {
   const { userId } = (req as any).user as { userId: string };
   const assets = await getAssetsByUser(userId);
-  return res.status(200).json(assets);
+  res.status(200).json(assets);
+  return;
 }
 
 export async function getAssetById(req: Request, res: Response) {
@@ -33,23 +37,27 @@ export async function getAssetById(req: Request, res: Response) {
 
   const asset = await getAsset(id, userId);
   if (!asset) {
-    return res.status(404).json({ error: "Asset not found" });
+    res.status(404).json({ error: "Asset not found" });
+    return;
   }
 
-  return res.status(200).json(asset);
+  res.status(200).json(asset);
+  return;
 }
 
 export async function patchAsset(req: Request, res: Response) {
   const { id } = req.params;
-  const { name, description } = req.body;
+  const { name, description } = req.body as Asset;
   const { userId } = (req as any).user as { userId: string };
 
   const asset = await editAsset(id, userId, name, description);
   if (!asset) {
-    return res.status(404).json({ error: "Asset not found or not yours" });
+    res.status(404).json({ error: "Asset not found or not yours" });
+    return;
   }
 
-  return res.status(200).json(asset);
+  res.status(200).json(asset);
+  return;
 }
 
 export async function deleteAssetById(req: Request, res: Response) {
@@ -57,5 +65,6 @@ export async function deleteAssetById(req: Request, res: Response) {
   const { userId } = (req as any).user as { userId: string };
 
   await removeAsset(id, userId);
-  return res.status(204).send(); // No Content
+  res.status(204).send();
+  return;
 }
