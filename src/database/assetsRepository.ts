@@ -17,3 +17,27 @@ export async function listUserAssets(userId: string) {
 
   return result.rows;
 }
+
+export async function getAssetById(id: string, userId: string) {
+  const result = await pool.query(
+    "SELECT * FROM assets WHERE id = $1 AND user_id = $2",
+    [id, userId]
+  );
+  return result.rows[0];
+}
+
+export async function updateAsset(id: string, userId: string, name?: string, description?: string) {
+  const result = await pool.query(
+    `UPDATE assets
+     SET name = COALESCE($1, name),
+         description = COALESCE($2, description)
+     WHERE id = $3 AND user_id = $4
+     RETURNING *`,
+    [name, description, id, userId]
+  );
+  return result.rows[0];
+}
+
+export async function deleteAsset(id: string, userId: string) {
+  await pool.query("DELETE FROM assets WHERE id = $1 AND user_id = $2", [id, userId]);
+}
