@@ -1,4 +1,5 @@
 import { pool } from "../config/database";
+import { Maintenance } from "../interfaces/Maintenance";
 
 export async function insertMaintenance(
   assetId: string,
@@ -29,4 +30,38 @@ export async function deleteMaintenance(id: string, assetId: string) {
     id,
     assetId,
   ]);
+}
+
+export async function updateMaintenanceById(
+  assetId: string,
+  maintenanceId: string,
+  data: Partial<{
+    maintenance: string;
+    description: string;
+    performed_at: string;
+    next_due_date: string;
+  }>
+) {
+  const result = await pool.query(
+    `
+    UPDATE maintenances
+    SET
+      maintenance = COALESCE($1, maintenance),
+      description = COALESCE($2, description),
+      performed_at = COALESCE($3, performed_at),
+      next_due_date = COALESCE($4, next_due_date)
+    WHERE id = $5 AND asset_id = $6
+    RETURNING *;
+    `,
+    [
+      data.maintenance ?? null,
+      data.description ?? null,
+      data.performed_at ?? null,
+      data.next_due_date ?? null,
+      maintenanceId,
+      assetId,
+    ]
+  );
+
+  return result.rows[0];
 }

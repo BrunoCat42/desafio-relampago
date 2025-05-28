@@ -2,6 +2,7 @@ import {
   insertMaintenance,
   listMaintenancesForAsset,
   deleteMaintenance,
+  updateMaintenanceById
 } from "../database/maintenanceRepository";
 import { NewMaintenance } from "../interfaces/Maintenance";
 
@@ -21,4 +22,16 @@ export async function getMaintenances(assetId: string) {
 
 export async function removeMaintenance(id: string, assetId: string) {
   return await deleteMaintenance(id, assetId);
+}
+export async function updateMaintenance(
+  assetId: string,
+  maintenanceId: string,
+  data: Partial<{
+    maintenance: string;
+    description: string;
+    performed_at: string;
+    next_due_date: string;
+  }>
+) {
+  return await updateMaintenanceById(assetId, maintenanceId, data);
 }

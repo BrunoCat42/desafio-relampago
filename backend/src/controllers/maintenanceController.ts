@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createMaintenance, getMaintenances, removeMaintenance } from "../services/maintenanceService";
+import { createMaintenance, getMaintenances, removeMaintenance, updateMaintenance } from "../services/maintenanceService";
 import { NewMaintenance } from "../interfaces/Maintenance";
 
 export async function postMaintenance(req: Request, res: Response) {
@@ -34,4 +34,26 @@ export async function deleteMaintenanceById(req: Request, res: Response) {
   await removeMaintenance(id, assetId);
    res.status(204).send();
    return
+}
+
+export async function patchMaintenanceById(req: Request, res: Response) {
+  try {
+    const assetId = req.params.assetId;
+    const maintenanceId = req.params.id;
+    const updateData = req.body;
+
+    if (!assetId || !maintenanceId) {
+      return res.status(400).json({ message: "Asset ID e Maintenance ID são obrigatórios." });
+    }
+
+    const updated = await updateMaintenance(assetId, maintenanceId, updateData);
+
+    if (!updated) {
+      return res.status(404).json({ message: "Manutenção não encontrada." });
+    }
+
+    return res.status(200).json(updated);
+  } catch (error) {
+    return res.status(500).json({ message: "Erro ao atualizar manutenção." });
+  }
 }
