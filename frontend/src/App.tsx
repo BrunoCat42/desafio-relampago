@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
@@ -10,7 +10,6 @@ function App() {
   const { user } = useAuth();
   return (
     <AuthProvider>
-      <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -20,7 +19,6 @@ function App() {
             element={user ? <DashboardPage /> : <Navigate to="/login" />}
           />{" "}
         </Routes>
-      </BrowserRouter>
     </AuthProvider>
   );
 }
