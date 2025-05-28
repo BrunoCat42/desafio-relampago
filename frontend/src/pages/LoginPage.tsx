@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { LoginForm } from "../components/LoginForm";
-import { Link } from "react-router-dom"; // não esqueça de usar o React Router
+import { Link } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
+  const navigate = useNavigate()
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,8 +22,7 @@ function LoginPage() {
     try {
       await login(email, password);
       setErrorMsg("");
-      alert("Login Realizado")
-      // redirecionar se necessário
+      navigate("/dashboard")
     } catch (error) {
       setErrorMsg("Falha no login");
     }
