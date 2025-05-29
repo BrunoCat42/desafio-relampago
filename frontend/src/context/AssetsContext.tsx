@@ -1,19 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
-
-interface Asset {
-  id: string;
-  name: string;
-  description: string;
-}
-
-interface AssetsContextProps {
-  assets: Asset[];
-  isLoading: boolean;
-  error: string | null;
-  loadAssets: () => void;
-  deleteAsset: (id: string) => void;
-}
+import type { Asset, NewAsset, AssetsContextProps } from "../interface/AssetInterface";
 
 const AssetsContext = createContext<AssetsContextProps | undefined>(undefined);
 
@@ -51,12 +38,50 @@ export function AssetsProvider({ children }: { children: ReactNode }) {
       .catch((err) => setError(err.message));
   };
 
+const createAsset = (data: NewAsset) => {
+  fetch("http://localhost:3000/assets", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Erro ao criar ativo");
+      loadAssets();
+    })
+    .catch((err) => setError(err.message));
+};
+
+const updateAsset = (data: Asset) => {
+  fetch(`http://localhost:3000/assets/${data.id}`, {
+    method: "PATCH",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Erro ao atualizar ativo");
+      loadAssets();
+    })
+    .catch((err) => setError(err.message));
+};
+
   useEffect(() => {
     loadAssets();
   }, []);
 
   return (
-    <AssetsContext.Provider value={{ assets, isLoading, error, loadAssets, deleteAsset }}>
+    <AssetsContext.Provider
+      value={{
+        assets,
+        isLoading,
+        error,
+        loadAssets,
+        deleteAsset,
+        createAsset,
+        updateAsset,
+      }}
+    >
       {children}
     </AssetsContext.Provider>
   );
@@ -64,6 +89,7 @@ export function AssetsProvider({ children }: { children: ReactNode }) {
 
 export function useAssets() {
   const context = useContext(AssetsContext);
-  if (!context) throw new Error("useAssets deve ser usado dentro de um AssetsProvider");
+  if (!context)
+    throw new Error("useAssets deve ser usado dentro de um AssetsProvider");
   return context;
 }

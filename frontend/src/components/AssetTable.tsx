@@ -1,10 +1,7 @@
 import AssetRow from "./AssetRow";
 import { useAssets } from "../context/AssetsContext";
+import type { AssetTableProps } from "../interface/AssetInterface";
 
-interface AssetTableProps {
-  onEdit: (id: string) => void;
-  onViewMaintenances: (id: string) => void;
-}
 
 export default function AssetTable({ onEdit, onViewMaintenances }: AssetTableProps) {
   const { assets } = useAssets();

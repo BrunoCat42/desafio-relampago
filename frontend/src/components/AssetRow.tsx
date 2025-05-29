@@ -1,16 +1,5 @@
 import { useAssets } from "../context/AssetsContext";
-
-interface Asset {
-  id: string;
-  name: string;
-  description: string;
-}
-
-interface AssetRowProps {
-  asset: Asset;
-  onEdit: (id: string) => void;
-  onViewMaintenances: (id: string) => void;
-}
+import type { AssetRowProps } from "../interface/AssetInterface";
 
 export default function AssetRow({ asset, onEdit, onViewMaintenances }: AssetRowProps) {
   const { deleteAsset } = useAssets();
