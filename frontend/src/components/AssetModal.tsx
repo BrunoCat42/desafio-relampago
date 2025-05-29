@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
-import type {AssetModalProps } from "../interface/AssetInterface";
+import type { AssetModalProps } from "../interface/AssetInterface";
 
-
-export default function AssetModal({ isOpen, onClose, onSave, assetToEdit }: AssetModalProps) {
+export default function AssetModal({
+  isOpen,
+  onClose,
+  onSave,
+  assetToEdit,
+}: AssetModalProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
@@ -19,12 +23,11 @@ export default function AssetModal({ isOpen, onClose, onSave, assetToEdit }: Ass
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (assetToEdit) {
-      onSave({ id: assetToEdit.id, name, description }); // Atualização
-    } else {
-      onSave({ name, description }); // Criação
-    }
+    const assetData = assetToEdit
+      ? { id: assetToEdit.id, name, description }
+      : { name, description };
 
+    onSave(assetData);
     onClose();
   };
 
@@ -46,10 +49,11 @@ export default function AssetModal({ isOpen, onClose, onSave, assetToEdit }: Ass
             placeholder="Descrição"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            required
           ></textarea>
           <button type="submit">Salvar</button>
-          <button type="button" onClick={onClose}>Cancelar</button>
+          <button type="button" onClick={onClose}>
+            Cancelar
+          </button>
         </form>
       </div>
     </div>

@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { useAssets } from "../context/AssetsContext";
 import AssetTable from "../components/AssetTable";
 import AssetModal from "../components/AssetModal";
@@ -6,9 +8,32 @@ import type { Asset, NewAsset } from "../interface/AssetInterface";
 
 export default function DashboardPage() {
   const { isLoading, error, assets, createAsset, updateAsset } = useAssets();
-
+  const {setUser, setIsLoading} = useAuth()
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [assetToEdit, setAssetToEdit] = useState<Asset | null>(null);
+  const navigate = useNavigate()
+
+useEffect(() => {
+  const checkLogin = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch("http://localhost:3000/login/check", {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Não autenticado");
+
+      const data = await res.json();
+      setUser({ id: data.id, email: data.email });
+    } catch {
+      setUser(null);
+      navigate("/login");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  checkLogin();
+}, []);
 
   const handleOpenCreateModal = () => {
     setAssetToEdit(null);

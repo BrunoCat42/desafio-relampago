@@ -3,16 +3,13 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App";
-import { AuthProvider } from "./context/AuthContext"; // ⬅️ importa o contexto
-import { AssetsProvider } from "./context/AssetsContext";
+import { AuthProvider } from "./context/AuthContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <AssetsProvider>
           <App />
-        </AssetsProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>
