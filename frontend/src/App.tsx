@@ -6,7 +6,12 @@ import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 
 function App() {
-  const { user } = useAuth();
+const {user, isLoading} = useAuth()
+
+if (isLoading){
+  return <p> Verificando sessão... </p>
+}
+
   return (
         <Routes>
           <Route path="/" element={<LandingPage />} />

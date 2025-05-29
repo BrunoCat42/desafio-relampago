@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 
 interface User {
@@ -8,6 +8,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
@@ -16,6 +17,27 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+  fetch("http://localhost:3000/login/check", {
+    method: "GET",
+    credentials: "include"
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error();
+      return res.json();
+    })
+    .then((data) => {
+      setUser({ id: data.id, email: data.email });
+    })
+    .catch(() => {
+      setUser(null);
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
+}, []);
 
   async function login(email: string, password: string) {
     try {
@@ -54,7 +76,7 @@ async function logout() {
 
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user,isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

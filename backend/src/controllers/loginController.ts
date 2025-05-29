@@ -26,3 +26,10 @@ export async function loginUser(
     return
   }
 }
+
+export function checkLogin(req: Request, res: Response) {
+  res.status(200).json({
+    id: (req as any).user.id,
+    email: (req as any).user.email
+  });
+}
