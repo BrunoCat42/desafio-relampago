@@ -1,24 +1,29 @@
-// src/pages/DashboardPage.tsx
-import { useAuth } from "../context/AuthContext";
+import { useAssets } from "../context/AssetsContext";
+import AssetTable from "../components/AssetTable";
 
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
+  const { isLoading, error } = useAssets();
+
+  const handleEdit = (id: string) => {
+    console.log("Editar", id);
+  };
+
+  const handleViewMaintenances = (id: string) => {
+    console.log("Ver Manutenções do ativo", id);
+  };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      {/* Menu do usuário */}
-      <div style={{ marginBottom: "1rem", borderBottom: "1px solid #ccc", paddingBottom: "1rem" }}>
-        <h2>Bem-vindo, {user?.email || "usuário"}!</h2>
-        <button onClick={logout}>Logout</button>
-      </div>
+    <div>
+      <h1>Dashboard</h1>
+      <button onClick={() => console.log("Abrir modal de criação")}>Novo Ativo</button>
 
-      {/* Área principal (tabela e ações futuras) */}
-      <div>
-        <h3>Área dos Ativos e Manutenções</h3>
-        <div style={{ border: "1px dashed #888", height: "300px", marginTop: "1rem", padding: "1rem" }}>
-          (Aqui ficará a tabela com os ativos e controles)
-        </div>
-      </div>
+      {isLoading && <p>Carregando ativos...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      <AssetTable
+        onEdit={handleEdit}
+        onViewMaintenances={handleViewMaintenances}
+      />
     </div>
   );
 }
