@@ -1,3 +1,7 @@
+export interface NewAsset {
+  name: string;
+  description: string;
+}
 export interface Asset {
   id: string;
   name: string;
@@ -10,11 +14,6 @@ export interface AssetRowProps {
   onViewMaintenances: (id: string) => void;
 }
 
-export interface NewAsset {
-  name: string;
-  description: string
-}
-
 export interface AssetsContextProps {
   assets: Asset[];
   isLoading: boolean;
@@ -25,8 +24,14 @@ export interface AssetsContextProps {
   updateAsset: (data: Asset) => void;
 }
 
-
 export interface AssetTableProps {
   onEdit: (id: string) => void;
   onViewMaintenances: (id: string) => void;
+}
+
+export interface AssetModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: NewAsset | Asset) => void;
+  assetToEdit?: Asset | null;
 }
