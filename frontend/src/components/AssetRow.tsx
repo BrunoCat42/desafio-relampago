@@ -12,6 +12,7 @@ export default function AssetRow({ asset, onEdit }: AssetRowProps) {
     try {
       console.log(data)
       await fetch("http://localhost:3000/api/maintenances", {
+
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

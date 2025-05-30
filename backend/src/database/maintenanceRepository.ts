@@ -64,3 +64,8 @@ export async function findAllMaintenances() {
   const result = await pool.query("SELECT * FROM maintenances");
   return result.rows;
 }
+
+export async function findAllMaintenances() {
+  const result = await pool.query("SELECT * FROM maintenances");
+  return result.rows;
+}

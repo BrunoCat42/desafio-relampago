@@ -55,6 +55,7 @@ export function MaintenancesProvider({ children }: { children: ReactNode }) {
   const setMaintenanceDone = async (maintenanceId: string) => {
     const now = new Date().toISOString();
     const response = await fetch(`http://localhost:3000/api/maintenances/${maintenanceId}`, {
+
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -69,6 +70,7 @@ export function MaintenancesProvider({ children }: { children: ReactNode }) {
 
   const addMaintenance = async (data: NewMaintenance) => {
     const response = await fetch("http://localhost:3000/api/maintenances", {
+
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

@@ -16,3 +16,4 @@ export interface NewMaintenance {
   performed_at?: string;      // Torna opcional
   next_due_date: string;      // Torna obrigatório
 }
+

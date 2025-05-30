@@ -24,7 +24,7 @@ async function createMaintenance(assetId, data) {
 }
 async function getMaintenancesById(assetId) {
     const result = await database_1.pool.query(`SELECT * FROM maintenances WHERE asset_id = $1 ORDER BY performed_at DESC;`, [assetId]);
-    return result.rows;
+
 }
 async function updateMaintenance(maintenanceId, data) {
     const fields = [];
@@ -49,6 +49,10 @@ async function updateMaintenance(maintenanceId, data) {
 }
 async function removeMaintenance(maintenanceId) {
     await database_1.pool.query(`DELETE FROM maintenances WHERE id = $1`, [maintenanceId]);
+}
+async function findAllMaintenances() {
+    const result = await database_1.pool.query("SELECT * FROM maintenances");
+    return result.rows;
 }
 async function findAllMaintenances() {
     const result = await database_1.pool.query("SELECT * FROM maintenances");

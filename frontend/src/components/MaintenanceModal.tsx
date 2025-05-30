@@ -36,6 +36,7 @@ export default function MaintenanceModal({
       setDescription(initialData.description);
       setPerformedAt(initialData.performed_at?.slice(0, 10)||"");
       setNextDueDate(initialData.next_due_date?.slice(0, 10));
+
     } else {
       setMaintenance("");
       setDescription("");
@@ -91,6 +92,7 @@ export default function MaintenanceModal({
               label="Próxima manutenção"
               type="date"
               required
+
               value={nextDueDate}
               onChange={(e) => setNextDueDate(e.target.value)}
               InputLabelProps={{ shrink: true }}
