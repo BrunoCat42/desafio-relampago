@@ -1,4 +1,13 @@
 import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  Box
+} from "@mui/material";
 import type { Maintenance, NewMaintenance } from "../interface/MaintenanceInterface";
 
 interface MaintenanceModalProps {
@@ -27,8 +36,13 @@ export default function MaintenanceModal({
       setDescription(initialData.description);
       setPerformedAt(initialData.performed_at.slice(0, 10));
       setNextDueDate(initialData.next_due_date?.slice(0, 10) || "");
+    } else {
+      setMaintenance("");
+      setDescription("");
+      setPerformedAt("");
+      setNextDueDate("");
     }
-  }, [initialData]);
+  }, [initialData, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,75 +56,56 @@ export default function MaintenanceModal({
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded shadow-lg w-full max-w-md"
-      >
-        <h2 className="text-xl font-bold mb-4">
+    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm" aria-labelledby="maintenance-dialog-title">
+      <form onSubmit={handleSubmit}>
+        <DialogTitle id="maintenance-dialog-title">
           {initialData ? "Editar Manutenção" : "Nova Manutenção"}
-        </h2>
-
-        <label className="block mb-2">
-          Tipo:
-          <input
-            className="w-full border rounded p-2"
-            value={maintenance}
-            onChange={(e) => setMaintenance(e.target.value)}
-            required
-          />
-        </label>
-
-        <label className="block mb-2">
-          Descrição:
-          <textarea
-            className="w-full border rounded p-2"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-          />
-        </label>
-
-        <label className="block mb-2">
-          Realizada em:
-          <input
-            type="date"
-            className="w-full border rounded p-2"
-            value={performedAt}
-            onChange={(e) => setPerformedAt(e.target.value)}
-            required
-          />
-        </label>
-
-        <label className="block mb-4">
-          Próxima manutenção:
-          <input
-            type="date"
-            className="w-full border rounded p-2"
-            value={nextDueDate}
-            onChange={(e) => setNextDueDate(e.target.value)}
-          />
-        </label>
-
-        <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-            onClick={onClose}
-          >
+        </DialogTitle>
+        <DialogContent dividers>
+          <Box display="flex" flexDirection="column" gap={2}>
+            <TextField
+              label="Tipo"
+              value={maintenance}
+              onChange={(e) => setMaintenance(e.target.value)}
+              required
+              fullWidth
+            />
+            <TextField
+              label="Descrição"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              fullWidth
+              multiline
+              minRows={2}
+            />
+            <TextField
+              label="Realizada em"
+              type="date"
+              value={performedAt}
+              onChange={(e) => setPerformedAt(e.target.value)}
+              required
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              label="Próxima manutenção"
+              type="date"
+              value={nextDueDate}
+              onChange={(e) => setNextDueDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} color="secondary">
             Cancelar
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
+          </Button>
+          <Button type="submit" variant="contained" color="primary">
             Salvar
-          </button>
-        </div>
+          </Button>
+        </DialogActions>
       </form>
-    </div>
+    </Dialog>
   );
 }

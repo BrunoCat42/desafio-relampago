@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import MaintenanceTable from "../components/MaintenanceTable";
 import MaintenanceModal from "../components/MaintenanceModal";
 import type { Maintenance, NewMaintenance } from "../interface/MaintenanceInterface";
+import { Paper, Typography, Button, Box, Stack } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
+import { DashboardHeader } from "../components/DashboardHeader";
 
 export default function DashboardPage() {
   const [maintenances, setMaintenances] = useState<Maintenance[]>([]);
@@ -30,48 +33,63 @@ export default function DashboardPage() {
   }, [selectedAssetId]);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Manutenções</h1>
+    <div className="dashboard-bg">
+      <Paper elevation={12} className="dashboard-paper" sx={{ width: "90vw", maxWidth: 1100 }}>
+        <DashboardHeader assetButton={true} />
+        <Box p={4}>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={4}
+            className="dashboard-header"
+          >
+            <Typography variant="h4" fontWeight="bold" className="dashboard-title">
+              Manutenções
+            </Typography>
+          </Stack>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setIsModalOpen(true)}
+            sx={{ mb: 3 }}
+            className="dashboard-create-btn"
+          >
+            Nova Manutenção
+          </Button>
+          {isLoading ? (
+            <Typography>Carregando manutenções...</Typography>
+          ) : (
+            <MaintenanceTable data={maintenances} />
+          )}
+        </Box>
+        <MaintenanceModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          assetId={selectedAssetId || "ID_FIXO_PARA_TESTE"}
+          onSave={async (data: NewMaintenance) => {
+            try {
+              const response = await fetch("http://localhost:3000/api/maintenance", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify(data),
+              });
 
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        Nova Manutenção
-      </button>
+              if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || "Erro ao salvar manutenção");
+              }
 
-      {isLoading ? (
-        <p>Carregando manutenções...</p>
-      ) : (
-        <MaintenanceTable data={maintenances} />
-      )}
-
-      <MaintenanceModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        assetId={selectedAssetId || "ID_FIXO_PARA_TESTE"}
-        onSave={async (data: NewMaintenance) => {
-          try {
-            const response = await fetch("http://localhost:3000/api/maintenance", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              credentials: "include",
-              body: JSON.stringify(data),
-            });
-
-            if (!response.ok) {
-              const errData = await response.json();
-              throw new Error(errData.error || "Erro ao salvar manutenção");
+              const newMaintenance = await response.json();
+              setMaintenances((prev) => [newMaintenance, ...prev]);
+              setIsModalOpen(false);
+            } catch (err: any) {
+              alert("Erro ao salvar manutenção: " + err.message);
             }
-
-            const newMaintenance = await response.json();
-            setMaintenances((prev) => [newMaintenance, ...prev]);
-            setIsModalOpen(false);
-          } catch (err: any) {
-            alert("Erro ao salvar manutenção: " + err.message);
-          }
-        }}
-      />
+          }}
+        />
+      </Paper>
     </div>
   );
 }

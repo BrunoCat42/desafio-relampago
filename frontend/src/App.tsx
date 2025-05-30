@@ -6,6 +6,7 @@ import RegisterPage from "./pages/RegisterPage";
 import DashboardAssets from "./pages/DashboardAssets";
 import DashboardPage from "./pages/DashboardPage";
 import { MaintenancesProvider } from "./context/MaintenanceContext";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   const { isLoading } = useAuth();
@@ -22,12 +23,21 @@ function App() {
       <Route
         path="/dashboard"
         element={
-          <MaintenancesProvider>
-            <DashboardPage />
-          </MaintenancesProvider>
+          <PrivateRoute>
+            <MaintenancesProvider>
+              <DashboardPage />
+            </MaintenancesProvider>
+          </PrivateRoute>
         }
       />
-      <Route path="/assets" element={<DashboardAssets />} />
+      <Route
+        path="/assets"
+        element={
+          <PrivateRoute>
+            <DashboardAssets />
+          </PrivateRoute>
+        }
+      />
     </Routes>
   );
 }
