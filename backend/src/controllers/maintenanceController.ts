@@ -9,10 +9,10 @@ import {
 import { NewMaintenance } from "../interfaces/Maintenance";
 
 export async function postMaintenance(req: Request, res: Response) {
-  const { assetId, maintenance, description, next_due_date } =
-    req.body as NewMaintenance & { assetId: string };
+  const { assetId, maintenance, description, next_due_date, completed } =
+    req.body as NewMaintenance & { assetId: string; completed?: boolean };
 
-      const performed_at = req.body.performed_at === "" ? null : req.body.performed_at;
+  const performed_at = req.body.performed_at === "" ? null : req.body.performed_at;
 
   if (!assetId || !maintenance || !description || !next_due_date) {
     res.status(400).json({ error: "One or more fields are required" });
@@ -24,6 +24,7 @@ export async function postMaintenance(req: Request, res: Response) {
     description,
     performed_at,
     next_due_date,
+    completed: completed ?? false,
   });
 
   res.status(201).json(record);
@@ -51,11 +52,16 @@ export async function deleteMaintenanceById(req: Request, res: Response) {
 
 export async function patchMaintenanceById(req: Request, res: Response) {
   const { maintenanceId } = req.params;
-  const updateData = req.body;
+  const updateData = { ...req.body };
 
   if (!maintenanceId) {
     res.status(400).json({ error: "Maintenance ID is required" });
     return;
+  }
+
+  // Se performed_at está sendo definido, completed também deve virar true
+  if (updateData.performed_at && updateData.completed === undefined) {
+    updateData.completed = true;
   }
 
   const updated = await modifyMaintenance(maintenanceId, updateData);
@@ -72,9 +78,9 @@ export async function getMaintenances(req: Request, res: Response) {
   try {
     const maintenances = await getAllMaintenances();
     res.status(200).json(maintenances);
-    return
+    return;
   } catch (err) {
     res.status(500).json({ error: "Erro ao buscar manutenções." });
-    return
+    return;
   }
 }

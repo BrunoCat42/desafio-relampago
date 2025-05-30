@@ -7,7 +7,7 @@ exports.patchMaintenanceById = patchMaintenanceById;
 exports.getMaintenances = getMaintenances;
 const maintenanceService_1 = require("../services/maintenanceService");
 async function postMaintenance(req, res) {
-    const { assetId, maintenance, description, next_due_date } = req.body;
+    const { assetId, maintenance, description, next_due_date, completed } = req.body;
     const performed_at = req.body.performed_at === "" ? null : req.body.performed_at;
     if (!assetId || !maintenance || !description || !next_due_date) {
         res.status(400).json({ error: "One or more fields are required" });
@@ -18,6 +18,7 @@ async function postMaintenance(req, res) {
         description,
         performed_at,
         next_due_date,
+        completed: completed ?? false,
     });
     res.status(201).json(record);
 }
@@ -41,10 +42,14 @@ async function deleteMaintenanceById(req, res) {
 }
 async function patchMaintenanceById(req, res) {
     const { maintenanceId } = req.params;
-    const updateData = req.body;
+    const updateData = { ...req.body };
     if (!maintenanceId) {
         res.status(400).json({ error: "Maintenance ID is required" });
         return;
+    }
+    // Se performed_at está sendo definido, completed também deve virar true
+    if (updateData.performed_at && updateData.completed === undefined) {
+        updateData.completed = true;
     }
     const updated = await (0, maintenanceService_1.modifyMaintenance)(maintenanceId, updateData);
     if (!updated) {

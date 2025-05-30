@@ -1,79 +1,90 @@
-import { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Box
-} from "@mui/material";
-import type { AssetModalProps } from "../interface/AssetInterface";
+import { useEffect } from "react";
+import { Modal, Box, Typography, TextField, Button } from "@mui/material";
+import { useForm } from "react-hook-form";
+import type { Asset, NewAsset } from "../interface/AssetInterface";
 
-export default function AssetModal({
-  isOpen,
-  onClose,
-  onSave,
-  assetToEdit,
-}: AssetModalProps) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+interface AssetModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: NewAsset) => void;
+  initialData?: Asset | null;
+}
+
+const style = {
+  position: 'absolute' as const,
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  borderRadius: 2,
+  boxShadow: 24,
+  p: 4,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 2,
+};
+
+export default function AssetModal({ isOpen, onClose, onSave, initialData }: AssetModalProps) {
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<NewAsset>({
+    defaultValues: {
+      name: "",
+      description: "",
+    },
+  });
 
   useEffect(() => {
-    if (assetToEdit) {
-      setName(assetToEdit.name);
-      setDescription(assetToEdit.description);
-    } else {
-      setName("");
-      setDescription("");
+    if (isOpen) {
+      if (initialData) {
+        reset({
+          name: initialData.name ?? "",
+          description: initialData.description ?? "",
+        });
+      } else {
+        reset({
+          name: "",
+          description: "",
+        });
+      }
     }
-  }, [assetToEdit, isOpen]);
+  }, [initialData, reset, isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const assetData = assetToEdit
-      ? { id: assetToEdit.id, name, description }
-      : { name, description };
-
-    onSave(assetData);
-    onClose();
-  };
+  const onSubmit = async (data: NewAsset) => {
+    await onSave(data);
+    };
 
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm" aria-labelledby="asset-dialog-title">
-      <form onSubmit={handleSubmit}>
-        <DialogTitle id="asset-dialog-title">
-          {assetToEdit ? "Editar Ativo" : "Novo Ativo"}
-        </DialogTitle>
-        <DialogContent dividers>
-          <Box display="flex" flexDirection="column" gap={2}>
-            <TextField
-              label="Nome"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              fullWidth
-            />
-            <TextField
-              label="Descrição"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              fullWidth
-              multiline
-              minRows={2}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose} color="secondary">
+    <Modal open={isOpen} onClose={onClose}>
+      <Box sx={style} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Typography variant="h6" mb={2}>
+          {initialData ? "Editar Ativo" : "Novo Ativo"}
+        </Typography>
+        <TextField
+          label="Nome"
+          {...register("name", { required: "Nome obrigatório" })}
+          error={!!errors.name}
+          helperText={errors.name?.message}
+          fullWidth
+          autoFocus
+        />
+        <TextField
+          label="Descrição"
+          {...register("description", { required: "Descrição obrigatória" })}
+          error={!!errors.description}
+          helperText={errors.description?.message}
+          fullWidth
+          multiline
+          minRows={2}
+        />
+        <Box display="flex" justifyContent="flex-end" gap={1} mt={2}>
+          <Button variant="outlined" onClick={onClose}>
             Cancelar
           </Button>
-          <Button type="submit" variant="contained" color="primary">
+          <Button variant="contained" type="submit">
             Salvar
           </Button>
-        </DialogActions>
-      </form>
-    </Dialog>
+        </Box>
+      </Box>
+    </Modal>
   );
 }

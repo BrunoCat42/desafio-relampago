@@ -3,8 +3,8 @@ import { Maintenance, NewMaintenance } from "../interfaces/Maintenance";
 
 export async function createMaintenance(assetId: string, data: NewMaintenance): Promise<Maintenance> {
   const query = `
-    INSERT INTO maintenances (asset_id, maintenance, description, performed_at, next_due_date)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO maintenances (asset_id, maintenance, description, performed_at, next_due_date,completed)
+    VALUES ($1, $2, $3, $4, $5,$6)
     RETURNING *;
   `;
 
@@ -14,6 +14,7 @@ export async function createMaintenance(assetId: string, data: NewMaintenance): 
     data.description,
     data.performed_at,
     data.next_due_date,
+    data.completed??false
   ];
 
   const result = await pool.query(query, values);

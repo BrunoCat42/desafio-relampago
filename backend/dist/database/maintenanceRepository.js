@@ -8,8 +8,8 @@ exports.findAllMaintenances = findAllMaintenances;
 const database_1 = require("../config/database");
 async function createMaintenance(assetId, data) {
     const query = `
-    INSERT INTO maintenances (asset_id, maintenance, description, performed_at, next_due_date)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO maintenances (asset_id, maintenance, description, performed_at, next_due_date,completed)
+    VALUES ($1, $2, $3, $4, $5,$6)
     RETURNING *;
   `;
     const values = [
@@ -18,6 +18,7 @@ async function createMaintenance(assetId, data) {
         data.description,
         data.performed_at,
         data.next_due_date,
+        data.completed ?? false
     ];
     const result = await database_1.pool.query(query, values);
     return result.rows[0];

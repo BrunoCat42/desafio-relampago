@@ -28,22 +28,14 @@ export function MaintenancesProvider({ children }: { children: ReactNode }) {
       if (!res.ok) throw new Error("Erro ao buscar manutenções");
       const data: Maintenance[] = await res.json();
 
-      // Corrigido: filtra e ordena os dados recebidos da API
-      const filteredAndSorted = data
-        .filter((m) => {
-          const hoje = new Date().toISOString().split("T")[0];
-          return (
-            (!m.performed_at || m.performed_at === "") &&
-            (!m.next_due_date || m.next_due_date >= hoje)
-          );
-        })
-        .sort((a, b) => {
-          if (!a.next_due_date) return 1;
-          if (!b.next_due_date) return -1;
-          return a.next_due_date.localeCompare(b.next_due_date);
-        });
+      // Apenas ordena, não filtra. Filtro por completed é feito na tela.
+      const sorted = data.sort((a, b) => {
+        if (!a.next_due_date) return 1;
+        if (!b.next_due_date) return -1;
+        return a.next_due_date.localeCompare(b.next_due_date);
+      });
 
-      setMaintenances(filteredAndSorted);
+      setMaintenances(sorted);
       setError(null);
     } catch (err: any) {
       setError(err.message);
@@ -55,7 +47,6 @@ export function MaintenancesProvider({ children }: { children: ReactNode }) {
   const setMaintenanceDone = async (maintenanceId: string) => {
     const now = new Date().toISOString();
     const response = await fetch(`http://localhost:3000/api/maintenances/${maintenanceId}`, {
-
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -70,7 +61,6 @@ export function MaintenancesProvider({ children }: { children: ReactNode }) {
 
   const addMaintenance = async (data: NewMaintenance) => {
     const response = await fetch("http://localhost:3000/api/maintenances", {
-
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

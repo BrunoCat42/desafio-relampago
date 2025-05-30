@@ -16,6 +16,7 @@ export default function MaintenanceTable({ data, getAssetName, onDone }: Props) 
           <th className="border p-2">Tipo</th>
           <th className="border p-2">Descrição</th>
           <th className="border p-2">Próxima manutenção</th>
+          <th className="border p-2">Status</th>
           <th className="border p-2">Ações</th>
         </tr>
       </thead>
@@ -27,14 +28,23 @@ export default function MaintenanceTable({ data, getAssetName, onDone }: Props) 
             <td className="border p-2">{item.description}</td>
             <td className="border p-2">{item.next_due_date ? new Date(item.next_due_date).toLocaleDateString() : '-'}</td>
             <td className="border p-2">
-              <Button
-                variant="contained"
-                size="small"
-                color="success"
-                onClick={() => onDone(item.id)}
-              >
-                Marcar como feita
-              </Button>
+              {item.completed ? (
+                <span style={{ color: "green", fontWeight: "bold" }}>Realizada</span>
+              ) : (
+                <span style={{ color: "orange", fontWeight: "bold" }}>Pendente</span>
+              )}
+            </td>
+            <td className="border p-2">
+              {!item.completed && (
+                <Button
+                  variant="contained"
+                  size="small"
+                  color="success"
+                  onClick={() => onDone(item.id)}
+                >
+                  Marcar como feita
+                </Button>
+              )}
             </td>
           </tr>
         ))}

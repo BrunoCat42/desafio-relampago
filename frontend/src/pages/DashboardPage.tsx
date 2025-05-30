@@ -5,20 +5,20 @@ import { Paper, Typography, Box } from "@mui/material";
 import { DashboardHeader } from "../components/DashboardHeader";
 
 export default function DashboardPage() {
-  const { maintenances, isLoading, error, reload, setMaintenanceDone } =
-    useMaintenances();
+  const { maintenances, isLoading, error, reload, setMaintenanceDone } = useMaintenances();
   const { assets } = useAssets();
 
   function getAssetName(asset_id: string) {
-    return (
-      assets.find((asset) => asset.id === asset_id)?.name || "Desconhecido"
-    );
+    return assets.find((asset) => asset.id === asset_id)?.name || "Desconhecido";
   }
 
   async function handleDone(maintenanceId: string) {
     await setMaintenanceDone(maintenanceId);
-    reload();
+    reload(); // Atualiza a lista após marcar como feita
   }
+
+  // Filtra apenas as manutenções pendentes (não completadas)
+  const maintenancesPendentes = maintenances.filter((m) => !m.completed);
 
   return (
     <div className="maintenances-bg">
@@ -37,7 +37,7 @@ export default function DashboardPage() {
             <Typography color="error">{error}</Typography>
           ) : (
             <MaintenanceTable
-              data={maintenances}
+              data={maintenancesPendentes}
               getAssetName={getAssetName}
               onDone={handleDone}
             />
