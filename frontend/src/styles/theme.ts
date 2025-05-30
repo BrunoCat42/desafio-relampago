@@ -7,27 +7,36 @@ const theme = createTheme({
     secondary: { main: "#40306d" },
     background: {
       default: "#1a1536",
-      paper: "#23204a"
     },
   },
   components: {
-    MuiButton: {
+    MuiTableHead: {
       styleOverrides: {
         root: {
-          // Mais contraste para outlined em fundo escuro
-          '&.MuiButton-outlined': {
-            borderColor: '#fff',
-            color: '#fff',
-            background: 'rgba(255,255,255,0.07)',
-            '&:hover': {
-              background: 'rgba(255,255,255,0.13)',
-              borderColor: '#fff',
-            }
-          },
+          background: "#23204a",
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          color: "#fff",
+          fontWeight: 700,
+          fontSize: 16
+        },
+        body: {
+          color: "#e8eaf6"
         }
       }
-    }
-  }
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 14,
+        },
+      },
+    },
+  },
 });
 
 export default theme;
