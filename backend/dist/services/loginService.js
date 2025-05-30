@@ -17,13 +17,17 @@ async function login({ email, password }) {
     if (!passwordMatches) {
         throw new Error("Invalid credentials.");
     }
-    const userLogin = {
-        userId: user.id,
-        name: user.name,
-        email: user.email
-    };
-    const token = jsonwebtoken_1.default.sign(userLogin, process.env.JWT_SECRET, {
-        expiresIn: "1h"
+    const token = jsonwebtoken_1.default.sign({
+        id: user.id,
+        email: user.email,
+    }, process.env.JWT_SECRET, {
+        expiresIn: "1h",
     });
-    return token;
+    return {
+        token,
+        user: {
+            id: user.id,
+            email: user.email,
+        },
+    };
 }

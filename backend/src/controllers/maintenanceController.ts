@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import {
   addMaintenance,
-  listMaintenances,
+  listMaintenancesById,
   deleteMaintenance,
   modifyMaintenance,
+  getAllMaintenances
 } from "../services/maintenanceService";
 import { NewMaintenance } from "../interfaces/Maintenance";
 
@@ -26,13 +27,13 @@ export async function postMaintenance(req: Request, res: Response) {
   res.status(201).json(record);
 }
 
-export async function getAllMaintenances(req: Request, res: Response) {
-  const assetId = req.body.assetId as string;
+export async function getMaintenancesById(req: Request, res: Response) {
+  const assetId = req.query.assetId as string;
   if (!assetId) {
     res.status(400).json({ error: "Asset ID is required" });
     return;
   }
-  const list = await listMaintenances(assetId);
+  const list = await listMaintenancesById(assetId);
   res.status(200).json(list);
 }
 
@@ -63,4 +64,15 @@ export async function patchMaintenanceById(req: Request, res: Response) {
   }
 
   res.status(200).json(updated);
+}
+
+export async function getMaintenances(req: Request, res: Response) {
+  try {
+    const maintenances = await getAllMaintenances();
+    res.status(200).json(maintenances);
+    return
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao buscar manutenções." });
+    return
+  }
 }
