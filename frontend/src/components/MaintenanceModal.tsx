@@ -34,8 +34,8 @@ export default function MaintenanceModal({
     if (initialData) {
       setMaintenance(initialData.maintenance);
       setDescription(initialData.description);
-      setPerformedAt(initialData.performed_at.slice(0, 10));
-      setNextDueDate(initialData.next_due_date?.slice(0, 10) || "");
+      setPerformedAt(initialData.performed_at?.slice(0, 10)||"");
+      setNextDueDate(initialData.next_due_date?.slice(0, 10));
     } else {
       setMaintenance("");
       setDescription("");
@@ -85,12 +85,12 @@ export default function MaintenanceModal({
               type="date"
               value={performedAt}
               onChange={(e) => setPerformedAt(e.target.value)}
-              required
               InputLabelProps={{ shrink: true }}
             />
             <TextField
               label="Próxima manutenção"
               type="date"
+              required
               value={nextDueDate}
               onChange={(e) => setNextDueDate(e.target.value)}
               InputLabelProps={{ shrink: true }}

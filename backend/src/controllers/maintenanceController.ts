@@ -9,10 +9,12 @@ import {
 import { NewMaintenance } from "../interfaces/Maintenance";
 
 export async function postMaintenance(req: Request, res: Response) {
-  const { assetId, maintenance, description, performed_at, next_due_date } =
+  const { assetId, maintenance, description, next_due_date } =
     req.body as NewMaintenance & { assetId: string };
 
-  if (!assetId || !maintenance || !description || !performed_at) {
+      const performed_at = req.body.performed_at === "" ? null : req.body.performed_at;
+
+  if (!assetId || !maintenance || !description || !next_due_date) {
     res.status(400).json({ error: "One or more fields are required" });
     return;
   }

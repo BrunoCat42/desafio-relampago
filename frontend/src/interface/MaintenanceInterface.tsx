@@ -3,16 +3,16 @@ export interface Maintenance {
   asset_id: string;
   maintenance: string;
   description: string;
-  performed_at: string;      // formato ISO: "2025-05-30T00:00:00.000Z"
-  next_due_date?: string | null;
-  created_at?: string;       // opcional, se vier do banco
-  updated_at?: string;       // opcional, se houver controle de edição
+  performed_at?: string;      // Torna opcional
+  next_due_date: string;      // Torna obrigatório
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface NewMaintenance {
-  assetId: string;           // camelCase no front-end, corresponde ao asset_id no back
+  assetId: string;
   maintenance: string;
   description: string;
-  performed_at: string;      // formato "yyyy-mm-dd"
-  next_due_date?: string;    // opcional
+  performed_at?: string;      // Torna opcional
+  next_due_date: string;      // Torna obrigatório
 }

@@ -7,8 +7,9 @@ exports.patchMaintenanceById = patchMaintenanceById;
 exports.getMaintenances = getMaintenances;
 const maintenanceService_1 = require("../services/maintenanceService");
 async function postMaintenance(req, res) {
-    const { assetId, maintenance, description, performed_at, next_due_date } = req.body;
-    if (!assetId || !maintenance || !description || !performed_at) {
+    const { assetId, maintenance, description, next_due_date } = req.body;
+    const performed_at = req.body.performed_at === "" ? null : req.body.performed_at;
+    if (!assetId || !maintenance || !description || !next_due_date) {
         res.status(400).json({ error: "One or more fields are required" });
         return;
     }
