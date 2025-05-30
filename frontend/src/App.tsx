@@ -1,13 +1,14 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import DashboardAssets from "./pages/DashboardAssets";
 import DashboardPage from "./pages/DashboardPage";
-import { AssetsProvider } from "./context/AssetsContext";
+import { MaintenancesProvider } from "./context/MaintenanceContext";
 
 function App() {
-  const { user, isLoading } = useAuth();
+  const { isLoading } = useAuth();
 
   if (isLoading) {
     return <p> Verificando sessão... </p>;
@@ -21,15 +22,12 @@ function App() {
       <Route
         path="/dashboard"
         element={
-          user ? (
-            <AssetsProvider>
-              <DashboardPage />
-            </AssetsProvider>
-          ) : (
-            <Navigate to="/login" />
-          )
+          <MaintenancesProvider>
+            <DashboardPage />
+          </MaintenancesProvider>
         }
       />
+      <Route path="/assets" element={<DashboardAssets />} />
     </Routes>
   );
 }

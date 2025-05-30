@@ -10,11 +10,11 @@ async function loginUser(req, res) {
         return;
     }
     try {
-        const token = await (0, loginService_1.login)({ email, password });
+        const { token, user } = await (0, loginService_1.login)({ email, password });
         res.cookie("token", token, {
             httpOnly: true,
             maxAge: 3600000
-        }).json({ succes: true });
+        }).json({ succes: true, user });
         return;
     }
     catch (err) {

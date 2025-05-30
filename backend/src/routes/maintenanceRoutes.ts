@@ -1,9 +1,10 @@
 import { Router } from "express";
 import {
   postMaintenance,
-  getAllMaintenances,
+  getMaintenancesById,
   patchMaintenanceById,
   deleteMaintenanceById,
+  getMaintenances
 } from "../controllers/maintenanceController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
@@ -12,7 +13,8 @@ const router = Router();
 router.use(authMiddleware)
 
 router.post("/", postMaintenance);
-router.get("/", getAllMaintenances);
+router.get("/", getMaintenances)
+router.get("/byAsset", getMaintenancesById);
 router.patch("/:maintenanceId", patchMaintenanceById);
 router.delete("/:maintenanceId", deleteMaintenanceById);
 

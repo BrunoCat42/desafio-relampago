@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createMaintenance = createMaintenance;
-exports.getMaintenances = getMaintenances;
+exports.getMaintenancesById = getMaintenancesById;
 exports.updateMaintenance = updateMaintenance;
 exports.removeMaintenance = removeMaintenance;
+exports.findAllMaintenances = findAllMaintenances;
 const database_1 = require("../config/database");
 async function createMaintenance(assetId, data) {
     const query = `
@@ -21,7 +22,7 @@ async function createMaintenance(assetId, data) {
     const result = await database_1.pool.query(query, values);
     return result.rows[0];
 }
-async function getMaintenances(assetId) {
+async function getMaintenancesById(assetId) {
     const result = await database_1.pool.query(`SELECT * FROM maintenance WHERE asset_id = $1 ORDER BY performed_at DESC;`, [assetId]);
     return result.rows;
 }
@@ -48,4 +49,8 @@ async function updateMaintenance(maintenanceId, data) {
 }
 async function removeMaintenance(maintenanceId) {
     await database_1.pool.query(`DELETE FROM maintenance WHERE id = $1`, [maintenanceId]);
+}
+async function findAllMaintenances() {
+    const result = await database_1.pool.query("SELECT * FROM maintenances");
+    return result.rows;
 }

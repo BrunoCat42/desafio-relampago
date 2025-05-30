@@ -1,123 +1,76 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { useAssets } from "../context/AssetsContext";
-import AssetTable from "../components/AssetTable";
-import AssetModal from "../components/AssetModal";
-import type { Asset, NewAsset } from "../interface/AssetInterface";
+import { useEffect, useState } from "react";
+import MaintenanceTable from "../components/MaintenanceTable";
+import MaintenanceModal from "../components/MaintenanceModal";
+import type { Maintenance, NewMaintenance } from "../interface/MaintenanceInterface";
 
 export default function DashboardPage() {
-  const navigate = useNavigate();
-  const { user, setUser } = useAuth();
-  const {
-    assets,
-    isLoading: isAssetsLoading,
-    createAsset,
-    updateAsset,
-  } = useAssets();
-
+  const [maintenances, setMaintenances] = useState<Maintenance[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [assetToEdit, setAssetToEdit] = useState<Asset | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedAssetId, setSelectedAssetId] = useState("");
 
   useEffect(() => {
-    const checkLogin = async () => {
+    async function fetchMaintenances() {
       try {
-        const response = await fetch("http://localhost:3000/api/login/check", {
+        const res = await fetch(`http://localhost:3000/api/maintenances`, {
           credentials: "include",
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setUser({ id: data.id, email: data.email });
-        } else {
-          navigate("/login");
-        }
-      } catch (error) {
-        console.error("Erro ao verificar login:", error);
-        navigate("/login");
+        if (!res.ok) throw new Error("Erro ao buscar manutenções");
+        const data = await res.json();
+        setMaintenances(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
       }
-    };
-
-    checkLogin();
-  }, [navigate, setUser]);
-
-  const handleOpenModal = async () => {
-    const response = await fetch("http://localhost:3000/api/login/check", {
-      credentials: "include",
-    });
-
-    if (!response.ok) {
-      navigate("/login");
-      return;
     }
 
-    setAssetToEdit(null);
-    setIsModalOpen(true);
-  };
-
-  const handleEditAsset = async (id: string) => {
-    const response = await fetch("http://localhost:3000/api/login/check", {
-      credentials: "include",
-    });
-
-    if (!response.ok) {
-      navigate("/login");
-      return;
-    }
-
-    const asset = assets.find((a) => a.id === id);
-    if (asset) {
-      setAssetToEdit(asset);
-      setIsModalOpen(true);
-    }
-  };
-
-  const handleSaveAsset = async (asset: NewAsset | Asset) => {
-    const response = await fetch("http://localhost:3000/api/login/check", {
-      credentials: "include",
-    });
-
-    if (!response.ok) {
-      navigate("/login");
-      return;
-    }
-
-    if ("id" in asset) {
-      updateAsset(asset);
-    } else {
-      createAsset(asset);
-    }
-
-    handleCloseModal();
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setAssetToEdit(null);
-  };
+    fetchMaintenances();
+  }, [selectedAssetId]);
 
   return (
-    <div>
-      <h1>Dashboard</h1>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Manutenções</h1>
 
-      <button onClick={handleOpenModal}>Novo Ativo</button>
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        Nova Manutenção
+      </button>
 
-      {isAssetsLoading ? (
-        <p>Carregando ativos...</p>
+      {isLoading ? (
+        <p>Carregando manutenções...</p>
       ) : (
-        <AssetTable
-          onEdit={handleEditAsset}
-          onViewMaintenances={(id) => {
-            console.log("Visualizar manutenções de", id);
-          }}
-        />
+        <MaintenanceTable data={maintenances} />
       )}
 
-      <AssetModal
+      <MaintenanceModal
         isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSave={handleSaveAsset}
-        assetToEdit={assetToEdit}
+        onClose={() => setIsModalOpen(false)}
+        assetId={selectedAssetId || "ID_FIXO_PARA_TESTE"}
+        onSave={async (data: NewMaintenance) => {
+          try {
+            const response = await fetch("http://localhost:3000/api/maintenance", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+              const errData = await response.json();
+              throw new Error(errData.error || "Erro ao salvar manutenção");
+            }
+
+            const newMaintenance = await response.json();
+            setMaintenances((prev) => [newMaintenance, ...prev]);
+            setIsModalOpen(false);
+          } catch (err: any) {
+            alert("Erro ao salvar manutenção: " + err.message);
+          }
+        }}
       />
     </div>
   );

@@ -1,8 +1,9 @@
 import {
   createMaintenance,
-  getMaintenances,
+  getMaintenancesById,
   removeMaintenance,
   updateMaintenance,
+  findAllMaintenances
 } from "../database/maintenanceRepository";
 
 import { Maintenance, NewMaintenance } from "../interfaces/Maintenance";
@@ -14,10 +15,10 @@ export async function addMaintenance(
   return await createMaintenance(assetId, data);
 }
 
-export async function listMaintenances(
+export async function listMaintenancesById(
   assetId: string
 ): Promise<Maintenance[]> {
-  return await getMaintenances(assetId);
+  return await getMaintenancesById(assetId);
 }
 
 export async function deleteMaintenance(
@@ -31,4 +32,8 @@ export async function modifyMaintenance(
   data: Partial<NewMaintenance>
 ): Promise<Maintenance | null> {
   return await updateMaintenance(maintenanceId, data);
+}
+
+export async function getAllMaintenances() {
+  return await findAllMaintenances();
 }

@@ -9,25 +9,25 @@ exports.deleteAssetById = deleteAssetById;
 const assetsService_1 = require("../services/assetsService");
 async function postAsset(req, res) {
     const { name, description } = req.body;
-    const { userId } = req.user;
+    const { id } = req.user;
     if (!name) {
         res.status(400).json({ error: "Name is required" });
         return;
     }
-    const asset = await (0, assetsService_1.createAsset)({ name, description }, userId);
+    const asset = await (0, assetsService_1.createAsset)({ name, description }, id);
     res.status(201).json(asset);
     return;
 }
 async function getAssets(req, res) {
-    const { userId } = req.user;
-    const assets = await (0, assetsService_1.getAssetsByUser)(userId);
+    const { id } = req.user;
+    const assets = await (0, assetsService_1.getAssetsByUser)(id);
     res.status(200).json(assets);
     return;
 }
 async function getAssetById(req, res) {
-    const { id } = req.params;
-    const { userId } = req.user;
-    const asset = await (0, assetsService_1.getAsset)(id, userId);
+    const { id: assetId } = req.params;
+    const { id } = req.user;
+    const asset = await (0, assetsService_1.getAsset)(assetId, id);
     if (!asset) {
         res.status(404).json({ error: "Asset not found" });
         return;
@@ -36,10 +36,10 @@ async function getAssetById(req, res) {
     return;
 }
 async function patchAsset(req, res) {
-    const { id } = req.params;
+    const { id: assetId } = req.params;
     const { name, description } = req.body;
-    const { userId } = req.user;
-    const asset = await (0, assetsService_1.editAsset)(id, userId, name, description);
+    const { id } = req.user;
+    const asset = await (0, assetsService_1.editAsset)(assetId, id, name, description);
     if (!asset) {
         res.status(404).json({ error: "Asset not found or not yours" });
         return;
@@ -48,9 +48,9 @@ async function patchAsset(req, res) {
     return;
 }
 async function deleteAssetById(req, res) {
-    const { id } = req.params;
-    const { userId } = req.user;
-    await (0, assetsService_1.removeAsset)(id, userId);
+    const { id: assetId } = req.params;
+    const { id } = req.user;
+    await (0, assetsService_1.removeAsset)(assetId, id);
     res.status(204).send();
     return;
 }

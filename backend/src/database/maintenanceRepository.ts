@@ -20,7 +20,7 @@ export async function createMaintenance(assetId: string, data: NewMaintenance): 
   return result.rows[0];
 }
 
-export async function getMaintenances(assetId: string): Promise<Maintenance[]> {
+export async function getMaintenancesById(assetId: string): Promise<Maintenance[]> {
   const result = await pool.query(
     `SELECT * FROM maintenance WHERE asset_id = $1 ORDER BY performed_at DESC;`,
     [assetId]
@@ -58,4 +58,9 @@ export async function updateMaintenance(
 
 export async function removeMaintenance(maintenanceId: string): Promise<void> {
   await pool.query(`DELETE FROM maintenance WHERE id = $1`, [maintenanceId]);
+}
+
+export async function findAllMaintenances() {
+  const result = await pool.query("SELECT * FROM maintenances");
+  return result.rows;
 }

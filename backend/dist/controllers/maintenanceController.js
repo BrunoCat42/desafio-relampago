@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postMaintenance = postMaintenance;
-exports.getAllMaintenances = getAllMaintenances;
+exports.getMaintenancesById = getMaintenancesById;
 exports.deleteMaintenanceById = deleteMaintenanceById;
 exports.patchMaintenanceById = patchMaintenanceById;
+exports.getMaintenances = getMaintenances;
 const maintenanceService_1 = require("../services/maintenanceService");
 async function postMaintenance(req, res) {
     const { assetId, maintenance, description, performed_at, next_due_date } = req.body;
@@ -19,13 +20,13 @@ async function postMaintenance(req, res) {
     });
     res.status(201).json(record);
 }
-async function getAllMaintenances(req, res) {
-    const assetId = req.body.assetId;
+async function getMaintenancesById(req, res) {
+    const assetId = req.query.assetId;
     if (!assetId) {
         res.status(400).json({ error: "Asset ID is required" });
         return;
     }
-    const list = await (0, maintenanceService_1.listMaintenances)(assetId);
+    const list = await (0, maintenanceService_1.listMaintenancesById)(assetId);
     res.status(200).json(list);
 }
 async function deleteMaintenanceById(req, res) {
@@ -50,4 +51,15 @@ async function patchMaintenanceById(req, res) {
         return;
     }
     res.status(200).json(updated);
+}
+async function getMaintenances(req, res) {
+    try {
+        const maintenances = await (0, maintenanceService_1.getAllMaintenances)();
+        res.status(200).json(maintenances);
+        return;
+    }
+    catch (err) {
+        res.status(500).json({ error: "Erro ao buscar manutenções." });
+        return;
+    }
 }
