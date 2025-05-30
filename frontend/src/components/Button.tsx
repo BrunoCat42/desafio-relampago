@@ -1,26 +1,13 @@
-// src/components/Button.tsx
-import type { ButtonHTMLAttributes } from "react";
+import { Button as MuiButton } from "@mui/material";
+import type { ButtonProps } from "@mui/material";
+import type { LinkProps } from "react-router-dom";
+import { forwardRef } from "react";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-}
+// Suporte para prop 'to' quando 'component={Link}'
+type CustomButtonProps = ButtonProps & Partial<LinkProps>;
 
-export default function Button({ children, ...rest }: ButtonProps) {
-  return (
-    <button
-      {...rest}
-      style={{
-        padding: "0.5rem 1rem",
-        border: "none",
-        borderRadius: "4px",
-        backgroundColor: "#007bff",
-        color: "#fff",
-        fontWeight: "bold",
-        cursor: "pointer",
-        opacity: rest.disabled ? 0.6 : 1,
-      }}
-    >
-      {children}
-    </button>
-  );
-}
+const Button = forwardRef<HTMLButtonElement, CustomButtonProps>((props, ref) => {
+  return <MuiButton ref={ref} {...props} />;
+});
+
+export default Button;

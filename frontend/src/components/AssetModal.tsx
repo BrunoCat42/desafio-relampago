@@ -1,4 +1,13 @@
 import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  Box
+} from "@mui/material";
 import type { AssetModalProps } from "../interface/AssetInterface";
 
 export default function AssetModal({
@@ -31,31 +40,40 @@ export default function AssetModal({
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>{assetToEdit ? "Editar Ativo" : "Novo Ativo"}</h2>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Nome"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-          <textarea
-            placeholder="Descrição"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          ></textarea>
-          <button type="submit">Salvar</button>
-          <button type="button" onClick={onClose}>
+    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm" aria-labelledby="asset-dialog-title">
+      <form onSubmit={handleSubmit}>
+        <DialogTitle id="asset-dialog-title">
+          {assetToEdit ? "Editar Ativo" : "Novo Ativo"}
+        </DialogTitle>
+        <DialogContent dividers>
+          <Box display="flex" flexDirection="column" gap={2}>
+            <TextField
+              label="Nome"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              fullWidth
+            />
+            <TextField
+              label="Descrição"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              fullWidth
+              multiline
+              minRows={2}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} color="secondary">
             Cancelar
-          </button>
-        </form>
-      </div>
-    </div>
+          </Button>
+          <Button type="submit" variant="contained" color="primary">
+            Salvar
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 }

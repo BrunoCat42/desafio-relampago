@@ -24,7 +24,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const checkLogin = async () => {
-      // Não verifica login nas rotas públicas
       if (["/login", "/"].includes(location.pathname)) {
         setIsLoading(false);
         return;
