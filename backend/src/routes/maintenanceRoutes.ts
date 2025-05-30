@@ -2,15 +2,15 @@ import { Router } from "express";
 import {
   postMaintenance,
   getAllMaintenances,
-  deleteMaintenanceById, 
-  patchMaintenanceById
+  patchMaintenanceById,
+  deleteMaintenanceById,
 } from "../controllers/maintenanceController";
 
-const router = Router({ mergeParams: true });
+const router = Router();
 
 router.post("/", postMaintenance);
 router.get("/", getAllMaintenances);
-router.delete("/:id", deleteMaintenanceById);
-router.patch("/:id", patchMaintenanceById);
+router.patch("/:maintenanceId", patchMaintenanceById);
+router.delete("/:maintenanceId", deleteMaintenanceById);
 
 export default router;

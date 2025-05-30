@@ -1,23 +1,22 @@
 import { Request, Response } from "express";
 import {
-  createMaintenance,
-  getMaintenances,
-  removeMaintenance,
-  updateMaintenance,
+  addMaintenance,
+  listMaintenances,
+  deleteMaintenance,
+  modifyMaintenance,
 } from "../services/maintenanceService";
 import { NewMaintenance } from "../interfaces/Maintenance";
 
 export async function postMaintenance(req: Request, res: Response) {
-  const { assetId } = req.params;
-  const { maintenance, description, performed_at, next_due_date } =
-    req.body as NewMaintenance;
+  const { assetId, maintenance, description, performed_at, next_due_date } =
+    req.body as NewMaintenance & { assetId: string };
 
-  if (!maintenance || !description || !performed_at) {
-    res.status(400).json({ error: "One or more field are required" });
+  if (!assetId || !maintenance || !description || !performed_at) {
+    res.status(400).json({ error: "One or more fields are required" });
     return;
   }
 
-  const record = await createMaintenance(assetId, {
+  const record = await addMaintenance(assetId, {
     maintenance,
     description,
     performed_at,
@@ -25,47 +24,43 @@ export async function postMaintenance(req: Request, res: Response) {
   });
 
   res.status(201).json(record);
-  return;
 }
 
 export async function getAllMaintenances(req: Request, res: Response) {
-  const { assetId } = req.params;
-  const list = await getMaintenances(assetId);
+  const assetId = req.body.assetId as string;
+  if (!assetId) {
+    res.status(400).json({ error: "Asset ID is required" });
+    return;
+  }
+  const list = await listMaintenances(assetId);
   res.status(200).json(list);
-  return;
 }
 
 export async function deleteMaintenanceById(req: Request, res: Response) {
-  const { id, assetId } = req.params;
-  await removeMaintenance(id, assetId);
+  const { maintenanceId } = req.params;
+  if (!maintenanceId) {
+    res.status(400).json({ error: "Maintenance ID is required" });
+    return;
+  }
+  await deleteMaintenance(maintenanceId);
   res.status(204).send();
-  return;
 }
 
 export async function patchMaintenanceById(req: Request, res: Response) {
-  try {
-    const assetId = req.params.assetId;
-    const maintenanceId = req.params.id;
-    const updateData = req.body;
+  const { maintenanceId } = req.params;
+  const updateData = req.body;
 
-    if (!assetId || !maintenanceId) {
-      res
-        .status(400)
-        .json({ message: "Asset ID e Maintenance ID são obrigatórios." });
-      return;
-    }
-
-    const updated = await updateMaintenance(assetId, maintenanceId, updateData);
-
-    if (!updated) {
-      res.status(404).json({ message: "Manutenção não encontrada." });
-      return;
-    }
-
-    res.status(200).json(updated);
-    return;
-  } catch (error) {
-    res.status(500).json({ message: "Erro ao atualizar manutenção." });
+  if (!maintenanceId) {
+    res.status(400).json({ error: "Maintenance ID is required" });
     return;
   }
+
+  const updated = await modifyMaintenance(maintenanceId, updateData);
+
+  if (!updated) {
+    res.status(404).json({ error: "Maintenance not found" });
+    return;
+  }
+
+  res.status(200).json(updated);
 }

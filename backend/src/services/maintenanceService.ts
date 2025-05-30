@@ -1,37 +1,34 @@
 import {
-  insertMaintenance,
-  listMaintenancesForAsset,
-  deleteMaintenance,
-  updateMaintenanceById
+  createMaintenance,
+  getMaintenances,
+  removeMaintenance,
+  updateMaintenance,
 } from "../database/maintenanceRepository";
-import { NewMaintenance } from "../interfaces/Maintenance";
 
-export async function createMaintenance(assetId: string, data: NewMaintenance) {
-  return await insertMaintenance(
-    assetId,
-    data.maintenance,
-    data.description,
-    data.performed_at,
-    data.next_due_date
-  );
-}
+import { Maintenance, NewMaintenance } from "../interfaces/Maintenance";
 
-export async function getMaintenances(assetId: string) {
-  return await listMaintenancesForAsset(assetId);
-}
-
-export async function removeMaintenance(id: string, assetId: string) {
-  return await deleteMaintenance(id, assetId);
-}
-export async function updateMaintenance(
+export async function addMaintenance(
   assetId: string,
+  data: NewMaintenance
+): Promise<Maintenance> {
+  return await createMaintenance(assetId, data);
+}
+
+export async function listMaintenances(
+  assetId: string
+): Promise<Maintenance[]> {
+  return await getMaintenances(assetId);
+}
+
+export async function deleteMaintenance(
+  maintenanceId: string
+): Promise<void> {
+  return await removeMaintenance(maintenanceId);
+}
+
+export async function modifyMaintenance(
   maintenanceId: string,
-  data: Partial<{
-    maintenance: string;
-    description: string;
-    performed_at: string;
-    next_due_date: string;
-  }>
-) {
-  return await updateMaintenanceById(assetId, maintenanceId, data);
+  data: Partial<NewMaintenance>
+): Promise<Maintenance | null> {
+  return await updateMaintenance(maintenanceId, data);
 }

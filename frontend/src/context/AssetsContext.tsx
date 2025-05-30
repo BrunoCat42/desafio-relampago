@@ -11,7 +11,7 @@ export function AssetsProvider({ children }: { children: ReactNode }) {
 
   const loadAssets = () => {
     setIsLoading(true);
-    fetch("http://localhost:3000/assets", {
+    fetch("http://localhost:3000/api/assets", {
       credentials: "include",
     })
       .then((res) => {
@@ -27,7 +27,7 @@ export function AssetsProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteAsset = (id: string) => {
-    fetch(`http://localhost:3000/assets/${id}`, {
+    fetch(`http://localhost:3000/api/assets/${id}`, {
       method: "DELETE",
       credentials: "include",
     })
@@ -39,7 +39,7 @@ export function AssetsProvider({ children }: { children: ReactNode }) {
   };
 
 const createAsset = (data: NewAsset) => {
-  fetch("http://localhost:3000/assets", {
+  fetch("http://localhost:3000/api/assets", {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -53,7 +53,7 @@ const createAsset = (data: NewAsset) => {
 };
 
 const updateAsset = (data: Asset) => {
-  fetch(`http://localhost:3000/assets/${data.id}`, {
+  fetch(`http://localhost:3000/api/assets/${data.id}`, {
     method: "PATCH",
     credentials: "include",
     headers: { "Content-Type": "application/json" },

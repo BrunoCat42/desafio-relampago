@@ -7,79 +7,77 @@ import AssetModal from "../components/AssetModal";
 import type { Asset, NewAsset } from "../interface/AssetInterface";
 
 export default function DashboardPage() {
-  const { isLoading, error, assets, createAsset, updateAsset } = useAssets();
-  const {setUser, setIsLoading} = useAuth()
+  const { user, isLoading } = useAuth();
+  const {
+    isLoading: isAssetsLoading,
+    assets,
+    createAsset,
+    updateAsset,
+  } = useAssets();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [assetToEdit, setAssetToEdit] = useState<Asset | null>(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-useEffect(() => {
-  const checkLogin = async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch("http://localhost:3000/login/check", {
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Não autenticado");
-
-      const data = await res.json();
-      setUser({ id: data.id, email: data.email });
-    } catch {
-      setUser(null);
+  useEffect(() => {
+    if (!isLoading && !user) {
       navigate("/login");
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, [isLoading, user, navigate]);
 
-  checkLogin();
-}, []);
+  if (isLoading) return <p>Verificando autenticação...</p>;
+  if (!user) return null;
 
-  const handleOpenCreateModal = () => {
+  const handleOpenModal = () => {
     setAssetToEdit(null);
     setIsModalOpen(true);
   };
 
-  const handleEdit = (id: string) => {
-    const asset = assets.find((a) => a.id === id);
-    if (asset) {
-      setAssetToEdit(asset);
-      setIsModalOpen(true);
-    }
-  };
-
-const handleSave = (data: NewAsset) => {
-  if (assetToEdit) {
-    updateAsset({ ...assetToEdit, ...data });
-  } else {
-    createAsset(data);
-  }
-  setIsModalOpen(false);
+const handleEditAsset = (id: string) => {
+  const asset = assets.find((a) => a.id === id);
+  if (!asset) return;
+  setAssetToEdit(asset);
+  setIsModalOpen(true);
 };
 
-    const handleViewMaintenances = (id: string) => {
-      console.log("Ver Manutenções do ativo", id);
-    };
 
-    return (
-      <div>
-        <h1>Dashboard</h1>
-        <button onClick={handleOpenCreateModal}>Novo Ativo</button>
-
-        {isLoading && <p>Carregando ativos...</p>}
-        {error && <p style={{ color: "red" }}>{error}</p>}
-
-        <AssetTable
-          onEdit={handleEdit}
-          onViewMaintenances={handleViewMaintenances}
-        />
-
-        <AssetModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSave={handleSave}
-          assetToEdit={assetToEdit}
-        />
-      </div>
-    );
+  const handleSaveAsset = (asset: NewAsset|Asset) => {
+    if ("id" in asset) {
+      updateAsset(asset);
+    } else {
+      createAsset(asset);
+    }
+    setIsModalOpen(false);
+    setAssetToEdit(null);
   };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setAssetToEdit(null);
+  };
+
+  return (
+    <div>
+      <h1>Dashboard</h1>
+
+      <button onClick={handleOpenModal}>Novo Ativo</button>
+
+      {isAssetsLoading ? (
+        <p>Carregando ativos...</p>
+      ) : (
+        <AssetTable
+          onEdit={handleEditAsset}
+          onViewMaintenances={(id) => {
+            console.log("Visualizar manutenções de", id); // placeholder
+          }}
+        />
+      )}
+
+      <AssetModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveAsset}
+        assetToEdit={assetToEdit}
+      />
+    </div>
+  );
+}

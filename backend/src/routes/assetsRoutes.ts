@@ -7,7 +7,6 @@ import {
   deleteAssetById,
 } from "../controllers/assetsController";
 import { authMiddleware } from "../middlewares/authMiddleware";
-import maintenanceRoutes from "./maintenanceRoutes"
 
 const router = Router();
 
@@ -18,7 +17,5 @@ router.get("/", getAssets);
 router.get("/:id", getAssetById);
 router.patch("/:id", patchAsset);
 router.delete("/:id", deleteAssetById);
-
-router.use("/:id/maintenance", maintenanceRoutes)
 
 export default router;
