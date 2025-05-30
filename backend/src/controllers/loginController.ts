@@ -14,11 +14,11 @@ export async function loginUser(
   }
 
   try {
-    const token = await login({ email, password });
+    const {token, user} = await login({ email, password });
     res.cookie("token", token, {
       httpOnly: true,
       maxAge: 3600000
-    }).json({succes: true})
+    }).json({succes: true, user})
     return
 
   } catch (err: any) {

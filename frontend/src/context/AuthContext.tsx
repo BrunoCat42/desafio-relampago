@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 
 interface User {
@@ -59,26 +59,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("Erro ao fazer logout:", error);
     }
   }
-
-   async function checkLogin() {
-    setIsLoading(true);
-    try {
-      const res = await fetch("http://localhost:3000/api/login/check", {
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Não autenticado");
-      const data = await res.json();
-      setUser({ id: data.id, email: data.email });
-    } catch (err) {
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-    useEffect(() => {
-    checkLogin();
-  }, []);
 
   return (
     <AuthContext.Provider

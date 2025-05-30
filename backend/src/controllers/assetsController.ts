@@ -12,30 +12,30 @@ import { Asset, NewAsset } from "../interfaces/Assets";
 
 export async function postAsset(req: Request, res: Response) {
   const { name, description } = req.body as NewAsset;
-  const { userId } = (req as any).user as { userId: string };
+  const { id } = (req as any).user as { id: string };
 
   if (!name) {
     res.status(400).json({ error: "Name is required" });
     return;
   }
 
-  const asset = await createAsset({ name, description }, userId);
+  const asset = await createAsset({ name, description }, id);
   res.status(201).json(asset);
   return;
 }
 
 export async function getAssets(req: Request, res: Response) {
-  const { userId } = (req as any).user as { userId: string };
-  const assets = await getAssetsByUser(userId);
+  const { id } = (req as any).user as { id: string };
+  const assets = await getAssetsByUser(id);
   res.status(200).json(assets);
   return;
 }
 
 export async function getAssetById(req: Request, res: Response) {
-  const { id } = req.params;
-  const { userId } = (req as any).user as { userId: string };
+  const { id:assetId } = req.params;
+  const { id } = (req as any).user as { id: string };
 
-  const asset = await getAsset(id, userId);
+  const asset = await getAsset(assetId, id);
   if (!asset) {
     res.status(404).json({ error: "Asset not found" });
     return;
@@ -46,11 +46,11 @@ export async function getAssetById(req: Request, res: Response) {
 }
 
 export async function patchAsset(req: Request, res: Response) {
-  const { id } = req.params;
+  const { id:assetId } = req.params;
   const { name, description } = req.body as Asset;
-  const { userId } = (req as any).user as { userId: string };
+  const { id } = (req as any).user as { id: string };
 
-  const asset = await editAsset(id, userId, name, description);
+  const asset = await editAsset(assetId, id, name, description);
   if (!asset) {
     res.status(404).json({ error: "Asset not found or not yours" });
     return;
@@ -61,10 +61,10 @@ export async function patchAsset(req: Request, res: Response) {
 }
 
 export async function deleteAssetById(req: Request, res: Response) {
-  const { id } = req.params;
-  const { userId } = (req as any).user as { userId: string };
+  const { id:assetId } = req.params;
+  const { id } = (req as any).user as { id: string };
 
-  await removeAsset(id, userId);
+  await removeAsset(assetId, id);
   res.status(204).send();
   return;
 }

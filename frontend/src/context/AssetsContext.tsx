@@ -26,7 +26,7 @@ export function AssetsProvider({ children }: { children: ReactNode }) {
       .finally(() => setIsLoading(false));
   };
 
-  const deleteAsset = (id: string) => {
+  const deleteAsset = async (id: string) => {
     fetch(`http://localhost:3000/api/assets/${id}`, {
       method: "DELETE",
       credentials: "include",
@@ -38,21 +38,32 @@ export function AssetsProvider({ children }: { children: ReactNode }) {
       .catch((err) => setError(err.message));
   };
 
-const createAsset = (data: NewAsset) => {
-  fetch("http://localhost:3000/api/assets", {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error("Erro ao criar ativo");
-      loadAssets();
-    })
-    .catch((err) => setError(err.message));
+const createAsset = async (data: NewAsset) => {
+  try {
+    const res = await fetch("http://localhost:3000/api/assets", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const resData = await res.json();
+
+    if (!res.ok) {
+      throw new Error(resData.error || "Erro ao criar ativo");
+    }
+
+    loadAssets();
+  } catch (err: any) {
+    console.error("Erro ao criar asset:", err.message);
+    setError(err.message);
+  }
 };
 
-const updateAsset = (data: Asset) => {
+
+const updateAsset = async(data: Asset) => {
   fetch(`http://localhost:3000/api/assets/${data.id}`, {
     method: "PATCH",
     credentials: "include",

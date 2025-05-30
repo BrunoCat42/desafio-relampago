@@ -7,47 +7,88 @@ import AssetModal from "../components/AssetModal";
 import type { Asset, NewAsset } from "../interface/AssetInterface";
 
 export default function DashboardPage() {
-  const { user, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const { user, setUser } = useAuth();
   const {
-    isLoading: isAssetsLoading,
     assets,
+    isLoading: isAssetsLoading,
     createAsset,
     updateAsset,
   } = useAssets();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [assetToEdit, setAssetToEdit] = useState<Asset | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    const checkLogin = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/login/check", {
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser({ id: data.id, email: data.email });
+        } else {
+          navigate("/login");
+        }
+      } catch (error) {
+        console.error("Erro ao verificar login:", error);
+        navigate("/login");
+      }
+    };
+
+    checkLogin();
+  }, [navigate, setUser]);
+
+  const handleOpenModal = async () => {
+    const response = await fetch("http://localhost:3000/api/login/check", {
+      credentials: "include",
+    });
+
+    if (!response.ok) {
       navigate("/login");
+      return;
     }
-  }, [isLoading, user, navigate]);
 
-  if (isLoading) return <p>Verificando autenticação...</p>;
-  if (!user) return null;
-
-  const handleOpenModal = () => {
     setAssetToEdit(null);
     setIsModalOpen(true);
   };
 
-const handleEditAsset = (id: string) => {
-  const asset = assets.find((a) => a.id === id);
-  if (!asset) return;
-  setAssetToEdit(asset);
-  setIsModalOpen(true);
-};
+  const handleEditAsset = async (id: string) => {
+    const response = await fetch("http://localhost:3000/api/login/check", {
+      credentials: "include",
+    });
 
+    if (!response.ok) {
+      navigate("/login");
+      return;
+    }
 
-  const handleSaveAsset = (asset: NewAsset|Asset) => {
+    const asset = assets.find((a) => a.id === id);
+    if (asset) {
+      setAssetToEdit(asset);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleSaveAsset = async (asset: NewAsset | Asset) => {
+    const response = await fetch("http://localhost:3000/api/login/check", {
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      navigate("/login");
+      return;
+    }
+
     if ("id" in asset) {
       updateAsset(asset);
     } else {
       createAsset(asset);
     }
-    setIsModalOpen(false);
-    setAssetToEdit(null);
+
+    handleCloseModal();
   };
 
   const handleCloseModal = () => {
@@ -67,7 +108,7 @@ const handleEditAsset = (id: string) => {
         <AssetTable
           onEdit={handleEditAsset}
           onViewMaintenances={(id) => {
-            console.log("Visualizar manutenções de", id); // placeholder
+            console.log("Visualizar manutenções de", id);
           }}
         />
       )}
