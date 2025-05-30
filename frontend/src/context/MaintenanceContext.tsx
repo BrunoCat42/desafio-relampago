@@ -8,6 +8,7 @@ interface MaintenancesContextProps {
   error: string | null;
   reload: () => void;
   addMaintenance: (data: NewMaintenance) => Promise<void>;
+  setMaintenanceDone: (maintenanceId: string) => Promise<void>;
 }
 
 const MaintenancesContext = createContext<MaintenancesContextProps | undefined>(undefined);
@@ -27,20 +28,20 @@ export function MaintenancesProvider({ children }: { children: ReactNode }) {
       if (!res.ok) throw new Error("Erro ao buscar manutenções");
       const data: Maintenance[] = await res.json();
 
-     const filteredAndSorted = maintenances
-  .filter((m) => {
-    const hoje = new Date().toISOString().split("T")[0];
-    return (
-      (!m.performed_at || m.performed_at === "") &&
-      (!m.next_due_date || m.next_due_date >= hoje)
-    );
-  })
-  .sort((a, b) => {
-    if (!a.next_due_date) return 1;
-    if (!b.next_due_date) return -1;
-    return a.next_due_date.localeCompare(b.next_due_date);
-  });
-
+      // Corrigido: filtra e ordena os dados recebidos da API
+      const filteredAndSorted = data
+        .filter((m) => {
+          const hoje = new Date().toISOString().split("T")[0];
+          return (
+            (!m.performed_at || m.performed_at === "") &&
+            (!m.next_due_date || m.next_due_date >= hoje)
+          );
+        })
+        .sort((a, b) => {
+          if (!a.next_due_date) return 1;
+          if (!b.next_due_date) return -1;
+          return a.next_due_date.localeCompare(b.next_due_date);
+        });
 
       setMaintenances(filteredAndSorted);
       setError(null);
@@ -48,6 +49,21 @@ export function MaintenancesProvider({ children }: { children: ReactNode }) {
       setError(err.message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+    const setMaintenanceDone = async (maintenanceId: string) => {
+    const now = new Date().toISOString();
+    const response = await fetch(`http://localhost:3000/api/maintenance/${maintenanceId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ performed_at: now }),
+    });
+
+    if (!response.ok) {
+      const errData = await response.json();
+      throw new Error(errData.error || "Erro ao marcar manutenção como feita");
     }
   };
 
@@ -73,7 +89,9 @@ export function MaintenancesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <MaintenancesContext.Provider value={{ maintenances, isLoading, error, reload, addMaintenance }}>
+    <MaintenancesContext.Provider value={{
+      maintenances, isLoading, error, reload, addMaintenance, setMaintenanceDone
+    }}>
       {children}
     </MaintenancesContext.Provider>
   );
