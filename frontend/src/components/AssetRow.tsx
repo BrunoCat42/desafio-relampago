@@ -10,7 +10,8 @@ export default function AssetRow({ asset, onEdit }: AssetRowProps) {
 
   const handleSave = async (data: NewMaintenance) => {
     try {
-      await fetch("http://localhost:3000/api/maintenance", {
+      console.log(data)
+      await fetch("http://localhost:3000/api/maintenances", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

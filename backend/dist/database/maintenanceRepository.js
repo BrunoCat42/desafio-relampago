@@ -8,7 +8,7 @@ exports.findAllMaintenances = findAllMaintenances;
 const database_1 = require("../config/database");
 async function createMaintenance(assetId, data) {
     const query = `
-    INSERT INTO maintenance (asset_id, maintenance, description, performed_at, next_due_date)
+    INSERT INTO maintenances (asset_id, maintenance, description, performed_at, next_due_date)
     VALUES ($1, $2, $3, $4, $5)
     RETURNING *;
   `;
@@ -23,7 +23,7 @@ async function createMaintenance(assetId, data) {
     return result.rows[0];
 }
 async function getMaintenancesById(assetId) {
-    const result = await database_1.pool.query(`SELECT * FROM maintenance WHERE asset_id = $1 ORDER BY performed_at DESC;`, [assetId]);
+    const result = await database_1.pool.query(`SELECT * FROM maintenances WHERE asset_id = $1 ORDER BY performed_at DESC;`, [assetId]);
     return result.rows;
 }
 async function updateMaintenance(maintenanceId, data) {
@@ -38,7 +38,7 @@ async function updateMaintenance(maintenanceId, data) {
     if (fields.length === 0)
         return null;
     const query = `
-    UPDATE maintenance
+    UPDATE maintenances
     SET ${fields.join(", ")}
     WHERE id = $${i}
     RETURNING *;
@@ -48,7 +48,7 @@ async function updateMaintenance(maintenanceId, data) {
     return result.rows[0] || null;
 }
 async function removeMaintenance(maintenanceId) {
-    await database_1.pool.query(`DELETE FROM maintenance WHERE id = $1`, [maintenanceId]);
+    await database_1.pool.query(`DELETE FROM maintenances WHERE id = $1`, [maintenanceId]);
 }
 async function findAllMaintenances() {
     const result = await database_1.pool.query("SELECT * FROM maintenances");

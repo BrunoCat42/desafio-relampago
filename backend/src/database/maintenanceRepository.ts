@@ -3,7 +3,7 @@ import { Maintenance, NewMaintenance } from "../interfaces/Maintenance";
 
 export async function createMaintenance(assetId: string, data: NewMaintenance): Promise<Maintenance> {
   const query = `
-    INSERT INTO maintenance (asset_id, maintenance, description, performed_at, next_due_date)
+    INSERT INTO maintenances (asset_id, maintenance, description, performed_at, next_due_date)
     VALUES ($1, $2, $3, $4, $5)
     RETURNING *;
   `;
@@ -22,7 +22,7 @@ export async function createMaintenance(assetId: string, data: NewMaintenance): 
 
 export async function getMaintenancesById(assetId: string): Promise<Maintenance[]> {
   const result = await pool.query(
-    `SELECT * FROM maintenance WHERE asset_id = $1 ORDER BY performed_at DESC;`,
+    `SELECT * FROM maintenances WHERE asset_id = $1 ORDER BY performed_at DESC;`,
     [assetId]
   );
   return result.rows;
@@ -45,7 +45,7 @@ export async function updateMaintenance(
   if (fields.length === 0) return null;
 
   const query = `
-    UPDATE maintenance
+    UPDATE maintenances
     SET ${fields.join(", ")}
     WHERE id = $${i}
     RETURNING *;
@@ -57,7 +57,7 @@ export async function updateMaintenance(
 }
 
 export async function removeMaintenance(maintenanceId: string): Promise<void> {
-  await pool.query(`DELETE FROM maintenance WHERE id = $1`, [maintenanceId]);
+  await pool.query(`DELETE FROM maintenances WHERE id = $1`, [maintenanceId]);
 }
 
 export async function findAllMaintenances() {
