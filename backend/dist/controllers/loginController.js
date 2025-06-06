@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginUser = loginUser;
 exports.checkLogin = checkLogin;
+exports.logoutUser = logoutUser;
 const loginService_1 = require("../services/loginService");
 async function loginUser(req, res) {
     const { email, password } = req.body;
@@ -11,10 +12,12 @@ async function loginUser(req, res) {
     }
     try {
         const { token, user } = await (0, loginService_1.login)({ email, password });
-        res.cookie("token", token, {
+        res
+            .cookie("token", token, {
             httpOnly: true,
-            maxAge: 3600000
-        }).json({ succes: true, user });
+            maxAge: 3600000,
+        })
+            .json({ succes: true, user });
         return;
     }
     catch (err) {
@@ -25,6 +28,14 @@ async function loginUser(req, res) {
 function checkLogin(req, res) {
     res.status(200).json({
         id: req.user.id,
-        email: req.user.email
+        email: req.user.email,
+        name: req.user.name
     });
+}
+function logoutUser(req, res) {
+    res.clearCookie("token", {
+        httpOnly: true,
+    });
+    res.status(200).json({ message: "Logout realizado com sucesso." });
+    return;
 }

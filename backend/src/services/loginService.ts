@@ -5,7 +5,7 @@ import { LoginData } from "../interfaces/Login";
 
 export async function login({ email, password }: LoginData): Promise<{
   token: string;
-  user: { id: string; email: string };
+  user: { id: string; email: string, name: string};
 }> {
   const result = await pool.query(
     "SELECT id, name, email, password_hash FROM users WHERE email = $1",
@@ -28,6 +28,7 @@ export async function login({ email, password }: LoginData): Promise<{
     {
       id: user.id,
       email: user.email,
+      name: user.name,
     },
     process.env.JWT_SECRET as string,
     {
@@ -40,6 +41,7 @@ export async function login({ email, password }: LoginData): Promise<{
     user: {
       id: user.id,
       email: user.email,
+      name: user.name
     },
   };
 }

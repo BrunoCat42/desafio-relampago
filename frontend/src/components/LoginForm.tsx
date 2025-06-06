@@ -1,4 +1,8 @@
-import React from "react";
+import { Link as RouterLink } from "react-router-dom";
+import { Link, Typography } from "@mui/material";
+
+import Input from "./Input";
+import Button from "./Button";
 
 interface LoginFormProps {
   email: string;
@@ -15,24 +19,49 @@ export function LoginForm({
   onEmailChange,
   onPasswordChange,
   onSubmit,
-  errorMsg
+  errorMsg,
 }: LoginFormProps) {
   return (
     <form onSubmit={onSubmit}>
-      <input
+      <Input
+        label="Email"
+        id="email"
         type="email"
-        placeholder="Email"
         value={email}
         onChange={(e) => onEmailChange(e.target.value)}
+        placeholder="Digite seu email"
       />
-      <input
+
+      <Input
+        label="Senha"
+        id="password"
         type="password"
-        placeholder="Senha"
         value={password}
         onChange={(e) => onPasswordChange(e.target.value)}
+        placeholder="Digite sua senha"
       />
-      <button type="submit">Entrar</button>
-      {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
+
+      <Button type="submit" variant="contained" color="primary" fullWidth>
+        Entrar
+      </Button>
+
+      {errorMsg && (
+        <Typography color="error" variant="body2" sx={{ mt: 2 }}>
+          {errorMsg}
+        </Typography>
+      )}
+
+      <Typography sx={{ mt: 2 }}>
+        Ainda não tem conta?{" "}
+        <Link
+          component={RouterLink}
+          to="/register"
+          underline="hover"
+          sx={{ color: "primary.main", fontWeight: 500 }}
+        >
+          Cadastre-se
+        </Link>
+      </Typography>
     </form>
   );
 }

@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 interface User {
   id: string;
   email: string;
+  name: string;
 }
 
 interface AuthContextType {
@@ -37,15 +38,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!res.ok) throw new Error("Não autenticado");
 
         const data = await res.json();
-        setUser({ id: data.id, email: data.email });
+        setUser({ id: data.id, email: data.email , name: data.name});
       } catch (error) {
         setUser(null);
+        console.log(error)
       } finally {
-        setIsLoading(false); // isso é crucial para desbloquear a interface
+        setIsLoading(false);
       }
     };
 
-    setIsLoading(true); // ativa o loading antes de checar
+    setIsLoading(true);
     checkLogin();
   }, [location.pathname]);
 
@@ -62,14 +64,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!response.ok) throw new Error("Login inválido.");
 
       const data = await response.json();
-      setUser({ id: data.id, email });
+      setUser({ id: data.id, email: data.email , name: data.name});
     } finally {
       setIsLoading(false);
     }
   };
 
   const logout = async () => {
-    await fetch("http://localhost:3000/api/logout", {
+    await fetch("http://localhost:3000/api/login/logout", {
       method: "POST",
       credentials: "include",
     });

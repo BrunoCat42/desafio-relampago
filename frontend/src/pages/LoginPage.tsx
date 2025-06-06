@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { LoginForm } from "../components/LoginForm";
-import { Link } from "react-router-dom"; 
 import { useNavigate } from "react-router-dom";
+import { Container, Box, Alert } from "@mui/material";
+import { Typography } from "@mui/material";
 
 function LoginPage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,30 +23,32 @@ function LoginPage() {
     try {
       await login(email, password);
       setErrorMsg("");
-      navigate("/dashboard")
+      navigate("/dashboard");
     } catch (error) {
       setErrorMsg("Falha no login");
+      console.log(error);
     }
   }
 
   return (
-    <div>
-      <h1>Login</h1>
+    <Container maxWidth="sm" sx={{ mt: 10 }}>
+      <Typography variant="h4" gutterBottom>
+        Login
+      </Typography>
 
-      <LoginForm
-        email={email}
-        password={password}
-        onEmailChange={setEmail}
-        onPasswordChange={setPassword}
-        onSubmit={handleSubmit}
-        errorMsg={errorMsg}
-      />
+      {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
 
-      <p>
-        Não tem cadastro?{" "}
-        <Link to="/register">Cadastre-se</Link>
-      </p>
-    </div>
+      <Box mt={2}>
+        <LoginForm
+          email={email}
+          password={password}
+          onEmailChange={setEmail}
+          onPasswordChange={setPassword}
+          onSubmit={handleSubmit}
+          errorMsg={errorMsg}
+        />
+      </Box>
+    </Container>
   );
 }
 

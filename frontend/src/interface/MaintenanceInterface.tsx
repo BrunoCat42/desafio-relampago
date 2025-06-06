@@ -4,7 +4,7 @@ export interface Maintenance {
   maintenance: string;
   description: string;
   performed_at?
-  : string;      
+  : string|number|Date|undefined;      
   next_due_date: string;      
   created_at?: string;
   updated_at?: string;

@@ -1,6 +1,4 @@
 body {
-  /* Gradiente roxo-azul */
-  background: linear-gradient(135deg, #D3D3D3  0%, #0000 100%);
   min-height: 100vh;
   margin: 0;
   font-family: 'Inter', 'Roboto', 'Arial', sans-serif;
@@ -12,7 +10,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  background: linear-gradient(135deg, #D3D3D3  0%, #0000 100%);
 }
 
 .center-content {

@@ -1,16 +1,19 @@
-import MyButton from "./Button"; // Use o nome real do seu botão customizado!
+import MyButton from "./Button";
 import { AppBar, Toolbar, Typography, Box } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
 import { Link as RouterLink, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type DashboardHeaderProps = {
   assetButton?: boolean;
 };
 
 export function DashboardHeader({ assetButton = false }: DashboardHeaderProps) {
-  const { user } = useAuth();
-  const username = user?.email || "Usuário";
+  const { user, logout } = useAuth();
+  const username = user?.name || "Usuário";
   const location = useLocation();
+  const navigate = useNavigate();
+
   const onAssets = location.pathname === "/dashboard-assets";
   const onMaintenances = location.pathname === "/dashboard";
 
@@ -18,8 +21,9 @@ export function DashboardHeader({ assetButton = false }: DashboardHeaderProps) {
     <AppBar position="static" color="transparent" elevation={0} className="dashboard-header">
       <Toolbar>
         <Box flex={1}>
-          <Typography variant="h6">Bem vindo, {username}</Typography>
+          <Typography variant="h6">Bem-vindo, {username}</Typography>
         </Box>
+
         <Box>
           {assetButton && !onAssets && (
             <MyButton
@@ -42,14 +46,17 @@ export function DashboardHeader({ assetButton = false }: DashboardHeaderProps) {
             </MyButton>
           )}
         </Box>
+
         <Box flex={1} display="flex" justifyContent="flex-end">
           <MyButton
+            onClick={async () => {
+              await logout();
+              navigate("/login");
+            }}
             color="primary"
             variant="contained"
-            component={RouterLink}
-            to="/login"
           >
-            Login
+            Sair
           </MyButton>
         </Box>
       </Toolbar>

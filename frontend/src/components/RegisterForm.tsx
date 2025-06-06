@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import { Link, Typography } from "@mui/material";
+
 import Input from "./Input";
 import Button from "./Button";
 
@@ -25,8 +27,6 @@ export default function RegisterForm({
 }: RegisterFormProps) {
   return (
     <form onSubmit={onSubmit}>
-      <h1>Cadastro</h1>
-
       <Input
         label="Nome"
         id="name"
@@ -53,13 +53,25 @@ export default function RegisterForm({
         placeholder="Digite sua senha"
       />
 
-      <Button type="submit">Cadastrar</Button>
+      <Button type="submit" variant="contained" color="primary" fullWidth>
+        Cadastrar
+      </Button>
 
-      {errorMsg && <p style={{ color: "red", marginTop: "1rem" }}>{errorMsg}</p>}
+      {errorMsg && (
+        <p style={{ color: "red", marginTop: "1rem" }}>{errorMsg}</p>
+      )}
 
-      <p style={{ marginTop: "1rem" }}>
-        Já tem conta? <Link to="/login">Faça login</Link>
-      </p>
+      <Typography sx={{ mt: 2 }}>
+        Já tem conta?{" "}
+        <Link
+          component={RouterLink}
+          to="/login"
+          underline="hover"
+          sx={{ color: "primary.main", fontWeight: 500 }}
+        >
+          Faça login
+        </Link>
+      </Typography>
     </form>
   );
 }

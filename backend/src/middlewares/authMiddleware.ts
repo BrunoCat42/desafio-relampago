@@ -20,6 +20,7 @@ export function authMiddleware(
       (req as any).user = {
         id: (decoded as JwtPayload).id,
         email: (decoded as JwtPayload).email,
+        name: (decoded as JwtPayload).name,
       };
 
 

@@ -20,6 +20,7 @@ async function login({ email, password }) {
     const token = jsonwebtoken_1.default.sign({
         id: user.id,
         email: user.email,
+        name: user.name,
     }, process.env.JWT_SECRET, {
         expiresIn: "1h",
     });
@@ -28,6 +29,7 @@ async function login({ email, password }) {
         user: {
             id: user.id,
             email: user.email,
+            name: user.name
         },
     };
 }

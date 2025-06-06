@@ -14,10 +14,9 @@ export default function DashboardPage() {
 
   async function handleDone(maintenanceId: string) {
     await setMaintenanceDone(maintenanceId);
-    reload(); // Atualiza a lista após marcar como feita
+    reload(); 
   }
 
-  // Filtra apenas as manutenções pendentes (não completadas)
   const maintenancesPendentes = maintenances.filter((m) => !m.completed);
 
   return (
